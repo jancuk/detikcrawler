@@ -1,31 +1,22 @@
-import urllib2, cStringIO, re
-from PIL import Image
+import urllib2, re
 
-def fetch_url(url):
-    return urllib2.urlopen(url)
-
-def fetch_source_images(url):
-    return cStringIO.StringIO(url)
-
-def image_open_by_url(url):
-    return Image.open(url)
+def get_size_image(url):
+    return urllib2.urlopen(url).info()['Content-Length']
 
 class DetikCalulcate:
     @classmethod
-    def calculate_images(self,image_url):
+    def calculate_images(self, image_url):
         if re.search("http|cdn|https|www|cnnindonesia", image_url):
             hit_url = image_url
         else:
             hit_url = "http://www.detik.com/%s" % image_url
         try:
-            file_image = fetch_source_images(fetch_url(hit_url).read())
-            im = image_open_by_url(file_image)
+            im = get_size_image(hit_url)
             return im
         except:
             try:
                 url_http    = hit_url.replace("//","http://")
-                file_image  = fetch_source_images(fetch_url(url_http).read())
-                im = image_open_by_url(file_image)
+                im = get_size_image(url_http)
                 return im
             except:
-                print hit_url
+                pass
